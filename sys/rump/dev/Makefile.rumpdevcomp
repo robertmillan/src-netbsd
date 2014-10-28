@@ -7,7 +7,7 @@ RUMPDEVCOMP=	audio bpf cgd disk dm drvctl fss md netsmb pad pud	\
 
 RUMPUSBDEVS=	ubt ucom ugenhc ulpt umass usb
 
-RUMPPCIDEVS=	pci pci_if_iwn pci_if_wm
+RUMPPCIDEVS=	pci pci_if_iwn pci_if_wm pci_auich
 # Not really a PCI device, but ....
 RUMPPCIDEVS+=	miiphy
 
