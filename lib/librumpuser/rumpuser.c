@@ -47,6 +47,10 @@ __RCSID("$NetBSD: rumpuser.c,v 1.60 2014/07/09 23:41:40 justin Exp $");
 #include <time.h>
 #include <unistd.h>
 
+#ifdef __linux__
+#include <sys/io.h>
+#endif
+
 #include <rump/rumpuser.h>
 
 #include "rumpuser_int.h"
@@ -82,6 +86,24 @@ rumpuser_init(int version, const struct rumpuser_hyperup *hyp)
 	rumpuser__hyp = *hyp;
 
 	return 0;
+}
+
+int
+rumpuser_io_init(void)
+{
+	static int rump_io_inited = 0;
+	if (rump_io_inited)
+		return 0;
+
+#if defined(__linux__)
+	if (iopl(3) == 0) {
+		rump_io_inited = 1;
+		return 0;
+	}
+	return errno;
+#else
+	return ENOSYS;
+#endif
 }
 
 int

@@ -65,7 +65,8 @@ bus_space_read_1(bus_space_tag_t bst, bus_space_handle_t bsh,
 	uint8_t rv;
 
 	if (bst == 0) {
-		panic("8bit IO space not supported");
+		unsigned short addr = bsh + offset;
+		__asm__ __volatile__("inb %1, %0" : "=a"(rv) : "d"(addr));
 	} else {
 		rv = *(volatile uint8_t *)(bsh + offset);
 	}
@@ -80,7 +81,8 @@ bus_space_read_2(bus_space_tag_t bst, bus_space_handle_t bsh,
 	uint16_t rv;
 
 	if (bst == 0) {
-		panic("16bit IO space not supported");
+		unsigned short addr = bsh + offset;
+		__asm__ __volatile__("inw %1, %0" : "=a"(rv) : "d"(addr));
 	} else {
 		rv = *(volatile uint16_t *)(bsh + offset);
 	}
@@ -95,12 +97,8 @@ bus_space_read_4(bus_space_tag_t bst, bus_space_handle_t bsh,
 	uint32_t rv;
 
 	if (bst == 0) {
-#if 1
-		panic("IO space not supported in this build");
-#else
 		unsigned short addr = bsh + offset;
 		__asm__ __volatile__("inl %1, %0" : "=a"(rv) : "d"(addr)); 
-#endif
 	} else {
 		rv = *(volatile uint32_t *)(bsh + offset);
 	}
@@ -114,9 +112,8 @@ bus_space_write_1(bus_space_tag_t bst, bus_space_handle_t bsh,
 {
 
 	if (bst == 0) {
-#if 1
-		panic("IO space not supported in this build");
-#endif
+		unsigned short addr = bsh + offset;
+		__asm__ __volatile__("outb %0, %1" :: "a"(v), "d"(addr));
 	} else {
 		*(volatile uint8_t *)(bsh + offset) = v;
 	}
@@ -128,9 +125,8 @@ bus_space_write_2(bus_space_tag_t bst, bus_space_handle_t bsh,
 {
 
 	if (bst == 0) {
-#if 1
-		panic("IO space not supported in this build");
-#endif
+		unsigned short addr = bsh + offset;
+		__asm__ __volatile__("outw %0, %1" :: "a"(v), "d"(addr));
 	} else {
 		*(volatile uint16_t *)(bsh + offset) = v;
 	}
@@ -142,12 +138,8 @@ bus_space_write_4(bus_space_tag_t bst, bus_space_handle_t bsh,
 {
 
 	if (bst == 0) {
-#if 1
-		panic("IO space not supported in this build");
-#else
 		unsigned short addr = bsh + offset;
 		__asm__ __volatile__("outl %0, %1" :: "a"(v), "d"(addr));
-#endif
 	} else {
 		*(volatile uint32_t *)(bsh + offset) = v;
 	}

@@ -249,4 +249,10 @@ int	rumpuser_sp_anonmmap(void *, size_t, void **);
 int	rumpuser_sp_raise(void *, int);
 void	rumpuser_sp_fini(void *);
 
+/*
+ * enable userspace I/O
+ */
+
+int rumpuser_io_init(void);
+
 #endif /* _RUMP_RUMPUSER_H_ */

@@ -61,13 +61,14 @@ RUMP_COMPONENT(RUMP_COMPONENT_DEV)
 
 	if ((error = rump_vfs_makedevnodes(S_IFCHR, "/dev/pci", '0',
 	    cmaj, 0, 4)) != 0)
-		printf("pci: failed to create /dev/pci nodes: %d", error);
+		printf("pci: failed to create /dev/pci nodes: %d\n", error);
 }
 
 RUMP_COMPONENT(RUMP_COMPONENT_DEV_AFTERMAINBUS)
 {
 	struct pcibus_attach_args pba;
 	device_t mainbus;
+	int error;
 
 	/* XXX: attach args should come from elsewhere */
 	memset(&pba, 0, sizeof(pba));
@@ -80,9 +81,12 @@ RUMP_COMPONENT(RUMP_COMPONENT_DEV_AFTERMAINBUS)
 #endif
 	pba.pba_flags = PCI_FLAGS_MEM_OKAY |
 	    PCI_FLAGS_MRL_OKAY | PCI_FLAGS_MRM_OKAY | PCI_FLAGS_MWI_OKAY;;
-#if 0
-	pba.pba_flags |= PCI_FLAGS_IO_OKAY;
-#endif
+
+	error = rumpuser_io_init();
+	if (error == 0)
+		pba.pba_flags |= PCI_FLAGS_IO_OKAY;
+	else
+		printf("pci: unable to raise I/O privilege level (error %d)\n", error);
 
 	mainbus = device_find_by_driver_unit("mainbus", 0);
 	if (!mainbus)
