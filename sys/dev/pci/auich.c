@@ -1701,6 +1701,13 @@ auich_calibrate(struct auich_softc *sc)
 		return;
 	}
 
+	/* avoid division by 0 below */
+	if (wait_us == 0) {
+		printf("%s: abnormal zero delay during calibration\n",
+					 device_xname(sc->sc_dev));
+		return;
+	}
+
 	actual_48k_rate = (bytes * UINT64_C(250000)) / wait_us;
 
 	if (actual_48k_rate < 50000)
