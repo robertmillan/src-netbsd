@@ -1675,7 +1675,7 @@ auich_calibrate(struct auich_softc *sc)
 	nciv = ociv;
 	do {
 		microtime(&t2);
-		if (t2.tv_sec - t1.tv_sec > 1)
+		//		if (t2.tv_sec - t1.tv_sec > 1)
 			break;
 		nciv = bus_space_read_1(sc->iot, sc->aud_ioh,
 					ICH_PCMI + ICH_CIV);
