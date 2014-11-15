@@ -46,6 +46,7 @@ __RCSID("$NetBSD: rumpuser.c,v 1.60 2014/07/09 23:41:40 justin Exp $");
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <sched.h>
 
 #ifdef __linux__
 #include <sys/io.h>
@@ -84,6 +85,20 @@ rumpuser_init(int version, const struct rumpuser_hyperup *hyp)
 
 	rumpuser__thrinit();
 	rumpuser__hyp = *hyp;
+
+	return 0;
+}
+
+/* Not quite, but hopefully close enough */
+int
+rumpuser_preempt_disable(void)
+{
+	struct sched_param param = {
+		.sched_priority = sched_get_priority_max(SCHED_FIFO),
+	};
+
+	if (sched_setscheduler(0, SCHED_FIFO, &param) != 0)
+		return errno;
 
 	return 0;
 }

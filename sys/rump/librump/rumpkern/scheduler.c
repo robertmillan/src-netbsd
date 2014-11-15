@@ -512,6 +512,7 @@ kpreempt(uintptr_t where)
 void
 kpreempt_disable(void)
 {
+	(void) rumpuser_preempt_disable();
 
 	KPREEMPT_DISABLE(curlwp);
 }

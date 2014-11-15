@@ -217,6 +217,8 @@ void rumpuser_cv_signal(struct rumpuser_cv *);
 void rumpuser_cv_broadcast(struct rumpuser_cv *);
 void rumpuser_cv_has_waiters(struct rumpuser_cv *, int *);
 
+int rumpuser_preempt_disable(void);
+
 /*
  * dynloader
  */
