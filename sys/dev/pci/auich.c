@@ -788,6 +788,19 @@ auich_read_codec(void *v, uint8_t reg, uint16_t *val)
 		ICH_CAS + sc->sc_modem_offset) & 1;
 	    DELAY(ICH_CODECIO_INTERVAL));
 
+	/*
+	 * Be permissive in first attempt. If previous instances of
+	 * this routine were interrupted precisely at this point (after
+	 * access is granted by CAS but before a command is sent),
+	 * they could have left hardware in an inconsistent state where
+	 * a command is expected and therefore semaphore wait would hit
+	 * the timeout.
+	 */
+	static int first = 1;
+	if (i <= 0 && first)
+		i = 1;
+	first = 0;
+
 	if (i > 0) {
 		*val = bus_space_read_2(sc->iot, sc->mix_ioh,
 		    reg + (sc->sc_codecnum * ICH_CODEC_OFFSET));
@@ -830,6 +843,12 @@ auich_write_codec(void *v, uint8_t reg, uint16_t val)
 	    bus_space_read_1(sc->iot, sc->aud_ioh,
 		ICH_CAS + sc->sc_modem_offset) & 1;
 	    DELAY(ICH_CODECIO_INTERVAL));
+
+	/* Be permissive in first attempt (see comments in auich_read_codec) */
+	static int first = 1;
+	if (i <= 0 && first)
+		i = 1;
+	first = 0;
 
 	if (i > 0) {
 		bus_space_write_2(sc->iot, sc->mix_ioh,
