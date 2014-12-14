@@ -32,7 +32,9 @@ __KERNEL_RCSID(0, "$NetBSD: audio_component.c,v 1.1 2014/03/13 01:57:52 pooka Ex
 #include <sys/conf.h>
 #include <sys/device.h>
 #include <sys/mbuf.h>
+#include <sys/filedesc.h>
 #include <sys/stat.h>
+#include <sys/vfs_syscalls.h>
 
 #include <dev/audio_if.h>
 
@@ -57,13 +59,17 @@ RUMP_COMPONENT(RUMP_COMPONENT_DEV)
 	if ((error = rump_vfs_makedevnodes(S_IFCHR, "/dev/audio", '0',
 	    cmaj, AUDIO_DEVICE, 4)) !=0)
 		panic("cannot create audio device nodes: %d", error);
+	FLAWLESSCALL(do_sys_symlink("audio0", "/dev/audio", UIO_SYSSPACE));
 	if ((error = rump_vfs_makedevnodes(S_IFCHR, "/dev/sound", '0',
 	    cmaj, SOUND_DEVICE, 4)) !=0)
 		panic("cannot create sound device nodes: %d", error);
+	FLAWLESSCALL(do_sys_symlink("sound0", "/dev/sound", UIO_SYSSPACE));
 	if ((error = rump_vfs_makedevnodes(S_IFCHR, "/dev/audioctl", '0',
 	    cmaj, AUDIOCTL_DEVICE, 4)) !=0)
 		panic("cannot create audioctl device nodes: %d", error);
+	FLAWLESSCALL(do_sys_symlink("audioctl0", "/dev/audioctl", UIO_SYSSPACE));
 	if ((error = rump_vfs_makedevnodes(S_IFCHR, "/dev/mixer", '0',
 	    cmaj, MIXER_DEVICE, 4)) !=0)
 		panic("cannot create mixer device nodes: %d", error);
+	FLAWLESSCALL(do_sys_symlink("mixer0", "/dev/mixer", UIO_SYSSPACE));
 }
